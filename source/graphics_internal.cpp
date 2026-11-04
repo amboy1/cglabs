@@ -393,6 +393,17 @@ bool initialize(GLFWwindow* const window) {
 				 .request_validation_layers()
 				 .build();
 
+	if (!ibr) {
+		vkb::InstanceBuilder fallback_ib;
+		ibr = fallback_ib.require_api_version(VK_MAKE_VERSION(1, 1, 0))
+						 .build();
+	}
+
+	if (!ibr) {
+		std::cerr << "Failed to create Vulkan instance: " << ibr.error().message() << '\n';
+		return false;
+	}
+
 	auto vkb_instance = ibr.value();
 	vk_instance = vkb_instance.instance;
 	vk_api_version = vkb_instance.api_version;
